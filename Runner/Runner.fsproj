@@ -10,4 +10,9 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PostScriptGenerator\PostScriptGenerator.fsproj" />
+    <ProjectReference Include="..\TreeManager\TreeManager.fsproj" />
+  </ItemGroup>
+
 </Project>
