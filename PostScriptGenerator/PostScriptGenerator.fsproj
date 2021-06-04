@@ -10,4 +10,7 @@
     <Compile Include="Library.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TreeManager\TreeManager.fsproj" />
+  </ItemGroup>
 </Project>

@@ -387,3 +387,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+Runner/output.pdf
