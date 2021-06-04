@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FPP1\TreeManager.fsproj" />
+    <ProjectReference Include="..\TreeManager\TreeManager.fsproj" />
   </ItemGroup>
 
 </Project>
