@@ -3,18 +3,8 @@
 module TreeManager =
     
     type 'a Tree = Node of 'a * ('a Tree list)
-    type 'a PosTree = ('a * float) Tree
     type Extent = (float * float) list
-    
-    
-    let n1 = Node (1, [])
-    let n2 = Node (2, [])
-    let n3 = Node (3, [])
-    let n4 = Node (4, [])
-    let n5 = Node (5, [])
-    
-    let test1 = Node (2, [Node (5, [])])
-    
+
     
     let movetree (Node ((label, x), subtrees), x': float) =
         Node((label, x + x'), subtrees)
