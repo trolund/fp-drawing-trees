@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "BVmkGYNauT11bYoJLhP/2ThuOaqdnZ9L2iIa8jIRAy9NYGOXqbo+uno2pmxZ1G+nrF0sHzAD5KwJbkzJ5jmP0g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\tlu\\source\\repos\\FPP1\\FPP1\\FPP1.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\tlu\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,10 @@
+C:\Users\tlu\source\repos\FPP1\FPP1\bin\Debug\net5.0\FPP1.deps.json
+C:\Users\tlu\source\repos\FPP1\FPP1\bin\Debug\net5.0\FPP1.dll
+C:\Users\tlu\source\repos\FPP1\FPP1\bin\Debug\net5.0\FPP1.pdb
+C:\Users\tlu\source\repos\FPP1\FPP1\bin\Debug\net5.0\FPP1.xml
+C:\Users\tlu\source\repos\FPP1\FPP1\obj\Debug\net5.0\FPP1.fsproj.AssemblyReference.cache
+C:\Users\tlu\source\repos\FPP1\FPP1\obj\Debug\net5.0\FPP1.AssemblyInfoInputs.cache
+C:\Users\tlu\source\repos\FPP1\FPP1\obj\Debug\net5.0\FPP1.AssemblyInfo.fs
+C:\Users\tlu\source\repos\FPP1\FPP1\obj\Debug\net5.0\FPP1.dll
+C:\Users\tlu\source\repos\FPP1\FPP1\obj\Debug\net5.0\FPP1.xml
+C:\Users\tlu\source\repos\FPP1\FPP1\obj\Debug\net5.0\FPP1.pdb
