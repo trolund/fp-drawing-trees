@@ -20,3 +20,5 @@ module Translator =
             | Node (v, tl) -> acc + fm + " " + fm + " lineto"
 
         b + aux "" t + e
+
+        b + aux "" t + e
