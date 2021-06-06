@@ -1,5 +1,6 @@
-﻿open FPP1.TreeManager
-    
+﻿open System
+open FPP1.TreeManager
+open PostScriptGenerator.Generator
    
 let n1 = Node (1, [])
 let n2 = Node (2, [Node (4, []); Node (6, []); Node (8, [])])
@@ -10,9 +11,9 @@ let p2 = Node ((2, 20.0), [Node ((4, 40.0), []); Node ((6, 60.0), []); Node ((8,
 let p3 = Node ((5, 50.0), [p1; p2; p1])
 
 
-
 [<EntryPoint>]
 let main argv =
-    let x1 = moveextent ([(10.0, 5.0); (20.0, 23.0); (1.0, 34.0)], 2.0)
-    0
-    
+    let t = design n3
+    let s = ps t
+    printf "%s" s
+    0 // return an integer exit code
