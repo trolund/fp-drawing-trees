@@ -7,15 +7,12 @@ module Generator =
     let moveTo x y = string x + " " + string y + " moveto\n"
     let text s = "(" + string s + ") " + "show"
 
-    let ps t =
-
     let toPSslow tree =
   
         let fm = string 20
         let lh = string 40
 
-        let b = "%!PS\n /Courier \n 20 selectfont\n
- (Hello world4!) show\n"
+        let b = "%!PS\n /Courier \n 20 selectfont \n (Hello world4!) show\n"
 
         let rec genPSTree tree x y =
             match tree with
