@@ -388,6 +388,5 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 Runner/output.pdf
-output.pdf
-output.ps
-log.txt
+*.pdf
+*.ps
