@@ -28,12 +28,12 @@ module Generator =
             | Node ((_, pos), _)::ts -> lineWidth ts ((abs pos) + acc)
 
 
-        let rec genLines children y =
+        let rec genLines children x y =
             match children with
             | []                     -> ""
             | Node ((l, pos), _)::ts -> let x = pos * nodeWidth
                                         let out = moveTo x y + lineto x (y - layerHeight)
-                                        let out = out + genLines ts y
+                                        let out = out + genLines ts x y
                                         out
 
         let rec genPSTree tree x y =
@@ -50,13 +50,16 @@ module Generator =
                                                let x = x + lineWidth
                                                let out = out + lineto x y           
                                                let out = out + stroke
-                                               let out = out + genLines subtrees y
+                                               let x = startX
+                                               let out = out + genLines subtrees x y
                                                let y = y - layerHeight - nodeHeight
-                                               out + genPSChildren subtrees startX y
+
+                                               //out + genPSChildren subtrees x y
+                                               out + stroke
         and genPSChildren children x y =
             match children with
             | []                            -> ""
-            | Node ((l, pos), subtrees)::ts -> let x = pos * nodeWidth
+            | Node ((l, pos), subtrees)::ts -> let x = x + pos * nodeWidth
                                                let out = List.fold (fun acc t -> acc + genPSTree t x y) "" ts
                                                let out = out + List.fold (fun acc t -> acc + genPSTree t x y) "" subtrees
                                                out
