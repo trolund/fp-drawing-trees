@@ -390,3 +390,4 @@ FodyWeavers.xsd
 Runner/output.pdf
 *.pdf
 *.ps
+log.txt
