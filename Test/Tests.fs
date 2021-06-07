@@ -63,3 +63,27 @@ let ``Property 3`` () =
         checkSymmetry ([design t],[design flipped])
     Check.QuickThrowOnFailure checkProperty
 //Node (0, [Node (0, [Node (0, [])]); Node (0, [Node (0, [])])])
+
+
+[<Fact>]
+let ``Property 3a`` () =
+    let rec reflect (Node(v, subtrees)) = Node(v, List.map reflect (List.rev subtrees))
+    let rec reflectpos (Node((v,x),subtrees)) = Node((v,-1.*x), List.map reflectpos subtrees)
+    let checkProperty (t:Tree<int>) = design t = reflect(reflectpos(design (reflect t)))
+    Check.QuickThrowOnFailure checkProperty
+
+[<Fact>]
+let ``Property 4`` () =
+    let rec collect (Node(x,subtrees)) = [Node(x,subtrees)]@(List.collect collect subtrees)
+    let rec checkSimilar e l =
+        match e,l with
+        | e,[] -> true
+        | e,h::t -> (similar e h) = (same e h) && checkSimilar e t
+    let rec checkSimilar' = function
+        | [] -> true
+        | h::t -> checkSimilar h t && checkSimilar' t
+    let checkProperty (t:Tree<int>) = 
+        let posTree = design t
+        let nodes = collect posTree
+        checkSimilar' nodes
+    Check.QuickThrowOnFailure checkProperty

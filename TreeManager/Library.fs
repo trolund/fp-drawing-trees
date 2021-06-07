@@ -5,7 +5,17 @@ module TreeManager =
     type 'a Tree = Node of 'a * ('a Tree list)
     type Extent = (float * float) list
     
-    
+    let rec same' x y =
+        match x,y with
+        | Node((_,x'),[]),Node((_,y'),[]) when x'=y'-> true
+        | Node((_,x'),xs),Node((_,y'),ys) when x'=y' -> List.length xs = List.length ys && List.forall2 same' xs ys
+        | _,_ -> false
+    let rec same (Node(_,x)) (Node(_,y)) = List.length x = List.length y && List.forall2 same' x y
+
+    let rec similar x y =
+        match x,y with
+        | Node(_,[]), Node(_,[]) -> true
+        | Node(_,xs),Node(_,ys) -> List.length xs = List.length ys && List.forall2 similar xs ys
 
     let movetree (Node ((label, x), subtrees), x': float) =
         Node((label, x + x'), subtrees)
