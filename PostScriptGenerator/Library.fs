@@ -23,7 +23,7 @@ module Generator =
             | []                                -> ""
             | Node ((label, pos), subtrees)::ts -> ""
             
-        b + genPSTree tree "0" "0" + e
+        b + genPSTree tree "0" "0"
 
     let toPSfast tree =
         ""
