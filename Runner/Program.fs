@@ -2,13 +2,12 @@
 open FPP1.TreeManager
 open PostScriptGenerator.Generator
    
-let n1 = Node (1, [])
-let n2 = Node (2, [Node (4, []); Node (6, []); Node (8, [])])
-let n3 = Node (5, [n1; n2; n1])
+
+let n0 = Node ('A', [Node ('B', [Node ('C', []); Node ('D', []); Node ('E', [])]); Node ('F', [Node ('G', []); Node ('H', []); Node ('I', [])]); Node ('J', [Node ('K', []); Node ('L', []); Node ('M', [])])])
 
 [<EntryPoint>]
 let main argv =
-    let postree = design n3
+    let postree = design n0
     let result = toPSslow postree
     printf "%s" result
     0
