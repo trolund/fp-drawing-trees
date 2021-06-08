@@ -14,7 +14,7 @@ module Generator =
     let depthMargin  = 16.0
 
     let psPre        = "%!\n<</PageSize[1400 1000]/ImagingBBox null>> setpagedevice\n1 1 scale\n700 999 translate\nnewpath\n/Times-Roman findfont 10 scalefont setfont\n"
-    let psPost        = "showpage"
+    let psPost       = "showpage"
     let stroke       = "stroke\n"
 
 
@@ -37,16 +37,15 @@ module Generator =
             match ts with 
             | []                      -> 0.0
             | Node ((_, pos), _)::[]  -> abs pos * nodeWidth
-            | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = (List.rev ts').Head
+            | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
                                          (abs pos + abs pos') * nodeWidth
                                        
         let rec subtreeLines ts x y =
             match ts with
             | []                     -> ""
-            | Node ((_, pos), _)::ts -> let x'  = positionX x pos 
-                                        let out = moveto x' y + lineto x' (y - depthHeight)
-                                        let out = out + subtreeLines ts x y
-                                        out
+            | Node ((_, pos), _)::ts -> let x' = positionX x pos 
+                                        moveto x' y + lineto x' (y - depthHeight) + subtreeLines ts x y
+                                        
 
         let rec psTree t x y =
             match t with
@@ -60,12 +59,9 @@ module Generator =
                                    let x = x - (lineWidth / 2.0)
                                    let out = out + moveto x y
                                    let x = x + lineWidth
-                                   let out = out + lineto x y
+                                   let out = out + lineto x y + stroke
                                    let x = x - (lineWidth / 2.0)
-                                   let out = out + stroke
-                                   let out = out + subtreeLines ts x y
-                                   let y = y - depthHeight - depthMargin
-                                   let out = out + psSubtrees ts x y
+                                   let out = out + subtreeLines ts x y + psSubtrees ts x (y - depthHeight - depthMargin)
                                    out
         and psSubtrees ts x y =
             match ts with
