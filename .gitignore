@@ -392,3 +392,4 @@ Runner/output.pdf
 *.ps
 log.txt
 PostScriptGenerator/Library.fs
+.DS_Store

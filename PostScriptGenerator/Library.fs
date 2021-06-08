@@ -5,6 +5,7 @@ open System.IO
 
 module Generator =
 
+    // global settings
     let startX       = 0.0
     let startY       = -20.0
 
@@ -17,6 +18,7 @@ module Generator =
     let psPre        = "%!\n<</PageSize[1400 1000]/ImagingBBox null>> setpagedevice\n1 1 scale\n700 999 translate\nnewpath\n/Times-Roman findfont 10 scalefont setfont\n"
     let showpage     = "showpage"
     let stroke       = "stroke\n"
+    
 
     let prettyLabel (l:string) = l.Replace(' ', '\n')
 
@@ -26,17 +28,21 @@ module Generator =
     let toPSslow t =
         let moveto x y = 
             string x + " " + string y + " moveto\n"
+         
 
         let lineto x y = 
             string x + " " + string y + " lineto\n"
 
+
         let label l 
             = "(" + string l + ") dup stringwidth pop 2 div neg 0 rmoveto show\n"
+
 
         let positionX x pos =
             match pos with
             | 0.0 -> x
             | _   -> x + pos * nodeWidth
+
 
         let rec subtreeWidth ts =
             match ts with 
@@ -44,12 +50,14 @@ module Generator =
             | Node ((_, pos), _)::[]  -> abs pos * nodeWidth
             | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
                                          (abs pos + abs pos') * nodeWidth
+
                                        
         let rec subtreeLines ts x y =
             match ts with
             | []                     -> ""
             | Node ((_, pos), _)::ts -> let x' = positionX x pos 
                                         moveto x' y + lineto x' (y - depthHeight) + subtreeLines ts x y
+
                                         
         let rec psTree t x y =
             match t with
@@ -77,6 +85,7 @@ module Generator =
                            
         psPre + psTree t startX startY + stroke + showpage
 
+
     let toPSfast t =
         let moveto x y =
             String.concat " " [ string x; string y; "moveto\n" ]
@@ -84,13 +93,16 @@ module Generator =
         let lineto x y =
             String.concat " " [ string x; string y; "lineto\n" ]
 
+
         let label l =
             String.concat "" [ "("; string l; ") dup stringwidth pop 2 div neg 0 rmoveto show\n" ]
+
 
         let positionX x pos =
             match pos with
             | 0.0 -> x
             | _   -> x + pos * nodeWidth
+
 
         let rec subtreeWidth ts =
             match ts with 
@@ -98,12 +110,14 @@ module Generator =
             | Node ((_, pos), _)::[]  -> abs pos * nodeWidth
             | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
                                          (abs pos + abs pos') * nodeWidth
+
                                        
         let rec subtreeLines ts x y =
             match ts with
             | []                     -> ""
             | Node ((_, pos), _)::ts -> let x' = positionX x pos 
                                         String.concat "" [moveto x' y; lineto x' (y - depthHeight); subtreeLines ts x y]
+
                                         
         let rec psTree t x y =
             match t with
@@ -135,11 +149,14 @@ module Generator =
                            
         String.concat "" [psPre; psTree t startX startY; stroke; showpage]
 
+
     let writeToFile n d =
         File.WriteAllText("../output/" + n + ".ps", d)
 
+
     let treeToFile n t =
         writeToFile n (design t |> toPSfast)
+
 
     let posTreeToFile n t =
         writeToFile n (toPSfast t)
