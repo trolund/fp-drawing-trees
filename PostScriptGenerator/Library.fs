@@ -54,11 +54,12 @@ module Generator =
                                    let y = y - nodeHeight
                                    let out = out + lineto x y
                                    let lineWidth = subtreeWidth ts
-                                   let x = x - (lineWidth / 2.0)
+                                   let halfLineWidth = lineWidth / 2.0
+                                   let x = x - halfLineWidth
                                    let out = out + moveto x y
                                    let x = x + lineWidth
                                    let out = out + lineto x y + stroke
-                                   let x = x - (lineWidth / 2.0)
+                                   let x = x - halfLineWidth
                                    let out = out + subtreeLines ts x y + psSubtrees ts x (y - depthHeight - depthMargin)
                                    out
         and psSubtrees ts x y =
