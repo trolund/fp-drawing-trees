@@ -1,6 +1,7 @@
 ﻿namespace PostScriptGenerator
 
 open FPP1.TreeManager
+open System.IO
 
 module Generator =
 
@@ -128,3 +129,9 @@ module Generator =
                         String.concat "" [psTree t x' y; psSubtrees ts' x y]
                            
         String.concat "" [psPre; psTree t startX startY; stroke; showpage]
+
+    let writeToFile n d = File.WriteAllText("../output/" + n, d)
+
+    let treeToFile n t = writeToFile n (design t |> toPSfast) 
+
+    let posTreeToFile n t = writeToFile n (toPSfast t)
