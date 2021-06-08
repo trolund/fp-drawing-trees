@@ -156,7 +156,7 @@ module TreeManager =
         List.map parseExp es
      and parseAccess a =
         match a with
-        | AVar s        -> Node("Var " + s, [])
+        | AVar s        -> Node("Var \"" + s + "\"", [])
         | AIndex (a, e) -> Node("Index", [parseAccess a; parseExp e])
         | ADeref e      -> Node("Deref", [parseExp e])
 
@@ -200,8 +200,8 @@ module TreeManager =
     and parseGc gc =
         match gc with
         | GC ([])            -> failwith "Empty GuardedCommand!"
-        | GC (((e, ss)::[])) -> Node("GuardedCommand", [parseExp e] @ parseStmList ss)
-        | GC ((e, ss)::gs)   -> Node("GuardedCommand", [parseExp e] @ parseStmList ss @ [parseGcList gs])
+        | GC (((e, ss)::[])) -> Node("Guarded Command", [parseExp e] @ parseStmList ss)
+        | GC ((e, ss)::gs)   -> Node("Guarded Command", [parseExp e] @ parseStmList ss @ [parseGcList gs])
     and parseGcList gs =
         parseGc (GC gs)
 

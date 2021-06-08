@@ -33,9 +33,6 @@ let p = P ([VarDec (ITyp, "x")],
 
 
 let producePDF () =     
-    let isWindows = System.Runtime.InteropServices.RuntimeInformation
-                                               .IsOSPlatform(OSPlatform.Windows);
-
     let file = "testProgram"
     let tree = parseProgram p
     treeToFile file tree
@@ -45,6 +42,7 @@ let producePDF () =
                         "../genPDF.bat"
                      else 
                         "../genPDF.sh";
+
     let procStart = ProcessStartInfo(scriptFile, file, WorkingDirectory = ".")
     let proc      = new Process(StartInfo = procStart)
     proc.Start() |> ignore
@@ -87,5 +85,7 @@ let main argv =
 
   printfn "%s : %f" "avg slow" slowavg
   printfn "%s : %f" "avg fast" fastavg
+
+  producePDF()
 
   0

@@ -2,6 +2,7 @@
 
 open FPP1.TreeManager
 open System.IO
+open System.Text
 
 module Generator =
 
@@ -14,16 +15,33 @@ module Generator =
     let nodeWidth    = 50.0
     let depthHeight  = 50.0
     let depthMargin  = 16.0
+    let labelMargin  = 10.0
 
     let psPre        = "%!\n<</PageSize[1400 1000]/ImagingBBox null>> setpagedevice\n1 1 scale\n700 999 translate\nnewpath\n/Times-Roman findfont 10 scalefont setfont\n"
     let showpage     = "showpage"
     let stroke       = "stroke\n"
+
     
+    let rec mostLabelSpaces ts = 
+        match ts with
+        | []                  -> 0.0
+        | Node((l, _), _)::ts -> let spaces = float (List.length ((string l).Split(' ') |> Array.toList))
+                                 max spaces (mostLabelSpaces ts)
 
-    let prettyLabel (l:string) = l.Replace(' ', '\n')
 
-    let newLines (l:string) = let l' = Seq.ofArray (l.ToCharArray())
-                              Seq.length(Seq.filter (fun c -> c = '\n') l') + 1
+    let positionX x pos =
+        match pos with
+        | 0.0 -> x
+        | _   -> x + pos * nodeWidth
+
+
+    let rec subtreeWidth ts =
+        match ts with 
+        | []                      -> 0.0
+        | Node ((_, pos), _)::[]  -> abs pos * nodeWidth
+        | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
+                                     (abs pos + abs pos') * nodeWidth
+
 
     let toPSslow t =
         let moveto x y = 
@@ -37,19 +55,14 @@ module Generator =
         let label l 
             = "(" + string l + ") dup stringwidth pop 2 div neg 0 rmoveto show\n"
 
-
-        let positionX x pos =
-            match pos with
-            | 0.0 -> x
-            | _   -> x + pos * nodeWidth
-
-
-        let rec subtreeWidth ts =
-            match ts with 
-            | []                      -> 0.0
-            | Node ((_, pos), _)::[]  -> abs pos * nodeWidth
-            | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
-                                         (abs pos + abs pos') * nodeWidth
+            
+        let makeLabel (l:string) x y = 
+            let ls = l.Split(' ') |> Array.toList
+            let rec makeLabel' ls x y = 
+                match ls with
+                | []    -> ""
+                | l::ls -> moveto x y + label l + makeLabel' ls x (y - labelMargin)
+            makeLabel' ls x y
 
                                        
         let rec subtreeLines ts x y =
@@ -61,10 +74,13 @@ module Generator =
                                         
         let rec psTree t x y =
             match t with
-            | Node ((l, _), []) -> moveto x y + label l
+            | Node ((l, _), []) -> makeLabel (string l) x y
             | Node ((l, _), ts) -> let out = moveto x y
                                    let y = y - parentMargin
-                                   let out = out + label l + moveto x y
+                                   let out = out + (makeLabel l x y)
+                                   let spaces = mostLabelSpaces ts
+                                   let y = y - spaces * labelMargin
+                                   let out = out + moveto x y
                                    let y = y - nodeHeight
                                    let out = out + lineto x y
                                    let lineWidth = subtreeWidth ts
@@ -90,27 +106,23 @@ module Generator =
         let moveto x y =
             String.concat " " [ string x; string y; "moveto\n" ]
 
+
         let lineto x y =
             String.concat " " [ string x; string y; "lineto\n" ]
 
 
-        let label l =
+        let label l = 
             String.concat "" [ "("; string l; ") dup stringwidth pop 2 div neg 0 rmoveto show\n" ]
 
 
-        let positionX x pos =
-            match pos with
-            | 0.0 -> x
-            | _   -> x + pos * nodeWidth
-
-
-        let rec subtreeWidth ts =
-            match ts with 
-            | []                      -> 0.0
-            | Node ((_, pos), _)::[]  -> abs pos * nodeWidth
-            | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
-                                         (abs pos + abs pos') * nodeWidth
-
+        let makeLabel (l:string) x y = 
+            let ls = l.Split(' ') |> Array.toList
+            let rec makeLabel' ls x y = 
+                match ls with
+                | []    -> ""
+                | l::ls -> String.concat "" [moveto x y; label l; makeLabel' ls x (y - labelMargin)]
+            makeLabel' ls x y
+           
                                        
         let rec subtreeLines ts x y =
             match ts with
@@ -121,11 +133,13 @@ module Generator =
                                         
         let rec psTree t x y =
             match t with
-            | Node ((l, _), []) -> moveto x y + label l
-            | Node ((l, _), ts) -> let sb = new System.Text.StringBuilder()
+            | Node ((l, _), []) -> makeLabel (string l) x y
+            | Node ((l, _), ts) -> let sb = new StringBuilder()
                                    sb.Append (moveto x y) |> ignore
                                    let y = y - parentMargin
-                                   sb.Append (label l)|> ignore
+                                   sb.Append (makeLabel l x y)|> ignore
+                                   let spaces = mostLabelSpaces ts
+                                   let y = y - spaces * labelMargin
                                    sb.Append (moveto x y) |> ignore
                                    let y = y - nodeHeight
                                    sb.Append (lineto x y) |> ignore
