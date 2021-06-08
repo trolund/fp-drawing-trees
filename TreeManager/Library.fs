@@ -147,23 +147,22 @@ module TreeManager =
             (resulttree, resultextent)
         fst (design' tree)
 
-
-
-    let rec parseExp (e:Exp) =
+    let rec parseExp e =
         match e with
         | N n           -> Node("Int " + string n, [])
         | B b           -> Node("Bool " + string b, [])
         | Access a      -> parseAccess a
         | Addr a        -> parseAccess a
-        | Apply (s, es) -> Node("Apply " + s, List.map parseExp es)
-     and parseAccess (a:Access) =
+        | Apply (s, es) -> Node("Apply " + s, parseExpList es)
+     and parseExpList es =
+        List.map parseExp es
+     and parseAccess a =
         match a with
         | AVar s        -> Node("Var " + s, [])
         | AIndex (a, e) -> Node("Index", [parseAccess a; parseExp e])
         | ADeref e      -> Node("Deref", [parseExp e])
 
-   
-    let rec parseTyp (t:Typ) =
+    let rec parseTyp t =
         match t with
         | ITyp           -> Node("IntTyp", [])
         | BTyp           -> Node("BoolTyp", [])
@@ -172,16 +171,21 @@ module TreeManager =
                             | None    -> Node("Array", [parseTyp t])
         | PTyp t         -> Node ("Pointer", [parseTyp t])
         | FTyp (ts, opt) -> match opt with
-                            | Some(t) -> Node("Function", List.map parseTyp ts @ [parseTyp t])
-                            | None    -> Node("Function", List.map parseTyp ts)
-
+                            | Some(t) -> Node("Function", parseTypList ts @ [parseTyp t])
+                            | None    -> Node("Function", parseTypList ts)
+    and parseTypList ts =
+        List.map parseTyp ts
 
     let rec parseDec d =
         match d with
         | VarDec (t, s)            -> Node ("VarDec", [Node (s, []); parseTyp t])
         | FunDec (opt, s, ds, stm) -> match opt with
-                                      | Some(t) -> Node("FunDec", [Node(s, [parseTyp t] @ List.map parseDec ds @ [parseStm stm])])
-                                      | None    -> Node("FunDec", [Node(s, List.map parseDec ds @ [parseStm stm])])
+                                      | Some(t) -> let nodes = [Node(s, [parseTyp t] @ parseDecList ds @ [parseStm stm])]
+                                                   Node("FunDec", nodes)
+                                      | None    -> let nodes = [Node(s, parseDecList ds @ [parseStm stm])]
+                                                   Node("FunDec", nodes)
+    and parseDecList ds = 
+        List.map parseDec ds
     and parseStm s =
         match s with
         | PrintLn e        -> Node("PrintLn", [parseExp e])
@@ -191,17 +195,21 @@ module TreeManager =
                               | None    -> Node("Return", [])
         | Alt gc           -> Node("Alt", [parseGc gc])
         | Do gc            -> Node("Do", [parseGc gc])
-        | Block (ds, ss)   -> Node("Block", List.map parseDec ds @ List.map parseStm ss)
-        | Call (s, es)     -> Node("Call " + s, List.map parseExp es)
+        | Block (ds, ss)   -> Node("Block", parseDecList ds @ parseStmList ss)
+        | Call (s, es)     -> Node("Call " + s, parseExpList es)
+    and parseStmList ss =
+        List.map parseStm ss
     and parseGc gc =
         match gc with
-        | GC ([])          -> Node("GuardedCommand", [])
-        | GC ((e, ss)::gs) -> Node("GuardedCommand", [parseExp e] @ List.map parseStm ss @ [parseGc (GC gs)])
-
+        | GC ([])            -> failwith "Empty GuardedCommand!"
+        | GC (((e, ss)::[])) -> Node("GuardedCommand", [parseExp e] @ parseStmList ss)
+        | GC ((e, ss)::gs)   -> Node("GuardedCommand", [parseExp e] @ parseStmList ss @ [parseGcList gs])
+    and parseGcList gs =
+        parseGc (GC gs)
 
     let parseProgram p =
         match p with
-        | P (ds, ss) -> Node ("Program", List.map parseDec ds @ List.map parseStm ss)                       
+        | P (ds, ss) -> Node ("Program", parseDecList ds @ parseStmList ss)                     
 
     let toGeneralTree p =
         parseProgram p
