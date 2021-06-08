@@ -72,7 +72,7 @@ module Generator =
             | []     -> ""
             | t::ts' -> let (Node((_, pos), _)) = t
                         let x' = positionX x pos
-                        psTree t x' y + psSubtrees ts' x y + stroke 
+                        psTree t x' y + psSubtrees ts' x y
                            
         psPre + psTree t startX startY + psPost
 
