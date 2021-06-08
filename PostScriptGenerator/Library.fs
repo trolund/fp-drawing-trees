@@ -14,7 +14,7 @@ module Generator =
     let depthMargin  = 16.0
 
     let psPre        = "%!\n<</PageSize[1400 1000]/ImagingBBox null>> setpagedevice\n1 1 scale\n700 999 translate\nnewpath\n/Times-Roman findfont 10 scalefont setfont\n"
-    let showpage       = "showpage"
+    let showpage     = "showpage"
     let stroke       = "stroke\n"
 
     let toPSslow t =
