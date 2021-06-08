@@ -3,6 +3,7 @@ open System.Diagnostics
 
 open FPP1.TreeManager
 open PostScriptGenerator.Generator
+open System.Runtime.InteropServices
    
 
 let n1 = Node ("NODE1", []);
@@ -35,8 +36,13 @@ let main argv =
     let file = "testProgram"
     let tree = parseProgram p
     treeToFile file tree
-    
-    let procStart = ProcessStartInfo("../genPDF.bat", file, WorkingDirectory = ".")
+   
+    let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    let scriptFile = if isWindows then 
+                        "../genPDF.bat"
+                     else 
+                        "../genPDF.sh";
+    let procStart = ProcessStartInfo(scriptFile, file, WorkingDirectory = ".")
     let proc      = new Process(StartInfo = procStart)
     proc.Start() |> ignore
     0

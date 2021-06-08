@@ -18,6 +18,11 @@ module Generator =
     let showpage     = "showpage"
     let stroke       = "stroke\n"
 
+    let prettyLabel (l:string) = l.Replace(' ', '\n')
+
+    let newLines (l:string) = let l' = Seq.ofArray (l.ToCharArray())
+                              Seq.length(Seq.filter (fun c -> c = '\n') l') + 1
+
     let toPSslow t =
         let moveto x y = 
             string x + " " + string y + " moveto\n"
@@ -134,7 +139,7 @@ module Generator =
         File.WriteAllText("../output/" + n + ".ps", d)
 
     let treeToFile n t =
-        writeToFile n (design t |> toPSfast) 
+        writeToFile n (design t |> toPSfast)
 
     let posTreeToFile n t =
         writeToFile n (toPSfast t)
