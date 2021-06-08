@@ -130,8 +130,11 @@ module Generator =
                            
         String.concat "" [psPre; psTree t startX startY; stroke; showpage]
 
-    let writeToFile n d = File.WriteAllText("../output/" + n + ".ps", d)
+    let writeToFile n d =
+        File.WriteAllText("../output/" + n + ".ps", d)
 
-    let treeToFile n t = writeToFile n (design t |> toPSfast) 
+    let treeToFile n t =
+        writeToFile n (design t |> toPSfast) 
 
-    let posTreeToFile n t = writeToFile n (toPSfast t)
+    let posTreeToFile n t =
+        writeToFile n (toPSfast t)
