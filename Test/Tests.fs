@@ -26,7 +26,7 @@ let rec checkCentering (trees:list<Tree<'a*float>>) =
             if x+y = 0. then checkCentering (t@subtrees) else false
 
 let prop2_fail = Node(("A",0.0),[Node(("B",-0.3),[]);Node(("C",0.7),[])])
-           
+
 //Property 3 
 let rec reflect (Node(v, subtrees)) = Node(v, List.map reflect (List.rev subtrees))
 let rec reflectpos (Node((v,x),subtrees)) = Node((v,-1.*x), List.map reflectpos subtrees)
@@ -52,6 +52,16 @@ let n7 = Node(("G",1.5),[n3;n4;n5])
 let n8 = Node(("F",-0.25),[])
 let n9 = Node(("A",0.),[n6;n8;n7])
 
+let n0_f = Node(("C",-1.),[])
+let n1_f = Node(("D",0.),[])
+let n2_f = Node(("E",1.),[])
+let n3_f = Node(("H",-2.),[])
+let n4_f = Node(("I",0.),[])
+let n5_f = Node(("J",2.),[])
+let n6_f = Node(("B",-1.),[n0_f;n1_f;n2_f])
+let n7_f = Node(("G",0.),[n3_f;n4_f;n5_f])
+let n8_f = Node(("F",1.),[n7_f])
+let n9_f = Node(("A",0.),[n6_f;n8_f])
 // TESTS
 
 [<Fact>]
@@ -96,6 +106,6 @@ let ``Property 4`` () =
 [<Fact>]
 let ``Property 4 Fail`` () = // Tests failing scenario from paper
     let checkProperty = 
-        let nodes = collect n9
+        let nodes = collect n9_f
         not (checkSimilar' nodes) // Negation as we expect to fail
     Check.QuickThrowOnFailure checkProperty
