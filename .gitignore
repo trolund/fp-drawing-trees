@@ -391,3 +391,4 @@ Runner/output.pdf
 *.pdf
 *.ps
 log.txt
+PostScriptGenerator/Library.fs

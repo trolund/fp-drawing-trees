@@ -17,6 +17,6 @@ let fact = Node ("Block", [Node ("VarDec", [Node ("n", []); Node ("IntTyp", []);
 let main argv =
     let postree = design fact
 
-    let result = toPSslow postree
+    let result = toPSfast postree
     printf "%s" result
     0
