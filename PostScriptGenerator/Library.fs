@@ -14,9 +14,8 @@ module Generator =
     let depthMargin  = 16.0
 
     let psPre        = "%!\n<</PageSize[1400 1000]/ImagingBBox null>> setpagedevice\n1 1 scale\n700 999 translate\nnewpath\n/Times-Roman findfont 10 scalefont setfont\n"
-    let psPost       = "showpage"
+    let showpage       = "showpage"
     let stroke       = "stroke\n"
-
 
     let toPSslow t =
         let moveto x y = 
@@ -46,7 +45,6 @@ module Generator =
             | Node ((_, pos), _)::ts -> let x' = positionX x pos 
                                         moveto x' y + lineto x' (y - depthHeight) + subtreeLines ts x y
                                         
-
         let rec psTree t x y =
             match t with
             | Node ((l, _), []) -> moveto x y + label l
@@ -70,7 +68,7 @@ module Generator =
                         let x' = positionX x pos
                         psTree t x' y + psSubtrees ts' x y
                            
-        psPre + psTree t startX startY + psPost
+        psPre + psTree t startX startY + stroke + showpage
 
     let toPSfast t =
         ""
