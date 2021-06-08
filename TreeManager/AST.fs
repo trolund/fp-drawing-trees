@@ -2,7 +2,7 @@
 // This file is obtained by an adaption of the file MicroC/Absyn.fs by Peter Sestoft
 //
 
-module AST =
+module AST
 
     type Exp =                            
              | N  of int                     (* Integer constant               *)

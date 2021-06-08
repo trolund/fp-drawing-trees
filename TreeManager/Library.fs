@@ -56,21 +56,6 @@ module TreeManager =
 
     type Program = P of Dec list * Stm list  (* Program                     *)
    
-    let p = P ([VarDec (ITyp, "x")],
-                [Ass (AVar "x", N 1);
-                  Do
-                    (GC
-                       [(Apply ("=", [Access (AVar "x"); N 1]),
-                         [PrintLn (Access (AVar "x"));
-                          Ass (AVar "x", Apply ("+", [Access (AVar "x"); N 1]))]);
-                        (Apply ("=", [Access (AVar "x"); N 2]),
-                         [PrintLn (Access (AVar "x"));
-                          Ass (AVar "x", Apply ("+", [Access (AVar "x"); N 1]))]);
-                        (Apply ("=", [Access (AVar "x"); N 3]),
-                         [PrintLn (Access (AVar "x"));
-                          Ass (AVar "x", Apply ("+", [Access (AVar "x"); N 1]))])]);
-                  PrintLn (Access (AVar "x"))])
-    
 
     let rec same' x y =
         match x,y with
@@ -164,9 +149,6 @@ module TreeManager =
 
 
 
-
-
-   
     let rec parseExp (e:Exp) =
         match e with
         | N n           -> Node("Int " + string n, [])
@@ -217,8 +199,9 @@ module TreeManager =
         | GC ((e, ss)::gs) -> Node("GuardedCommand", [parseExp e] @ List.map parseStm ss @ [parseGc (GC gs)])
 
 
-
     let parseProgram p =
         match p with
         | P (ds, ss) -> Node ("Program", List.map parseDec ds @ List.map parseStm ss)                       
 
+    let toGeneralTree p =
+        parseProgram p
