@@ -3,6 +3,7 @@ open System.Diagnostics
 
 open FPP1.TreeManager
 open PostScriptGenerator.Generator
+open System.Runtime.InteropServices
    
 
 let n1 = Node ("NODE1", []);
@@ -30,13 +31,60 @@ let p = P ([VarDec (ITyp, "x")],
                       Ass (AVar "x", Apply ("+", [Access (AVar "x"); N 1]))])]);
               PrintLn (Access (AVar "x"))])
 
-[<EntryPoint>]
-let main argv =
+
+let producePDF () =     
+    let isWindows = System.Runtime.InteropServices.RuntimeInformation
+                                               .IsOSPlatform(OSPlatform.Windows);
+
     let file = "testProgram"
     let tree = parseProgram p
     treeToFile file tree
+
+    let path = if isWindows 
+               then "../genPDF.bat" 
+               else "../genPDF.sh"
     
-    let procStart = ProcessStartInfo("../genPDF.bat", file, WorkingDirectory = ".")
+    let procStart = ProcessStartInfo(path, file, WorkingDirectory = ".")
     let proc      = new Process(StartInfo = procStart)
     proc.Start() |> ignore
-    0
+
+let timeFunc n f = 
+  // start timer.
+  let stopWatch = Stopwatch.StartNew()
+
+  // method to test
+  let v = f()
+
+  // stop timer.
+  stopWatch.Stop()
+
+  // print result
+  printfn "%s : %f" n stopWatch.Elapsed.TotalMilliseconds
+  stopWatch.Elapsed.TotalMilliseconds
+
+let multiRun n f = 
+
+  let rec aux acc n =
+    match n with
+    | n when n = 0 -> acc
+    | n -> let rand = new Random()
+           let v = f()
+           aux (v :: acc) (n - 1) 
+
+  aux [] n
+
+let avg l =        
+    let sum, count = List.fold (fun (s, c) v -> (s + v, c + 1.)) (0.,0.) l
+    sum / count
+
+[<EntryPoint>]
+let main argv =
+  let tree = design n8
+
+  let slowavg = multiRun 20 (fun() -> timeFunc "slow" (fun() -> toPSslow tree )) |> avg
+  let fastavg = multiRun 20 (fun() -> timeFunc "fast" (fun() -> toPSfast tree )) |> avg
+
+  printfn "%s : %f" "avg slow" slowavg
+  printfn "%s : %f" "avg fast" fastavg
+
+  0
