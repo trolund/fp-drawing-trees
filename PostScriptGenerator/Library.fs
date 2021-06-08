@@ -28,18 +28,20 @@ module Generator =
 
         let comment s = "%% " + s
 
-        let rec lineWidth subtrees acc =
+        let rec lineWidth subtrees =
             match subtrees with 
-            | []                     -> acc * nodeWidth
-            | Node ((_, pos), _)::ts -> lineWidth ts ((abs pos) + acc)
-
+            | []                     -> 0.0
+            | Node ((_, pos), _)::[] -> (abs pos) * nodeWidth
+            | Node ((_, pos), _)::ts -> let (Node((_, pos'), _)) = (List.rev ts).Head
+                                        ((abs pos) + (abs pos')) * nodeWidth
+                                       
 
         let rec genLines children x y =
             match children with
             | []                     -> ""
             | Node ((l, pos), _)::ts -> let x' = if pos = 0.0 then
                                                      x
-                                                 else 
+                                                 else
                                                      x + pos * nodeWidth 
                                         let out = moveto x' y + lineto x' (y - layerHeight)
                                         let out = out + genLines ts x y
@@ -54,13 +56,14 @@ module Generator =
                                                let out = out + label l + moveto x y
                                                let y = y - nodeHeight
                                                let out = out + lineto x y
-                                               let lineWidth = lineWidth subtrees 0.0
+                                               let lineWidth = lineWidth subtrees
+                                               let out = out + comment ("lineWidth: " + string lineWidth + "\n")
                                                let x = x - (lineWidth / 2.0)
                                                let out = out + moveto x y
                                                let x = x + lineWidth
-                                               let out = out + lineto x y   
+                                               let out = out + lineto x y
                                                let x = x - (lineWidth / 2.0)
-                                               let out = out + stroke 
+                                               let out = out + stroke
                                                let out = out + genLines subtrees x y
                                                let y = y - layerHeight - 16.0;
                                                let out = out + genPSChildren subtrees x y
