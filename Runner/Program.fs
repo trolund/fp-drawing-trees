@@ -36,7 +36,7 @@ let p = P ([VarDec (ITyp, "x")],
 let producePDF () =     
     let file = "testProgram"
     let tree = toGeneralTree p
-    treeToFile file n4
+    treeToFile file tree
    
     let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     let scriptFile = if isWindows then 

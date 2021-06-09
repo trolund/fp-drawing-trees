@@ -21,13 +21,6 @@ module Generator =
     let showpage     = "showpage"
     let stroke       = "stroke\n"
 
-    
-    let rec mostLabelSpaces ts = 
-        match ts with
-        | []                  -> 0.0
-        | Node((l, _), _)::ts -> let spaces = float (List.length ((string l).Split(' ') |> Array.toList))
-                                 max spaces (mostLabelSpaces ts)
-
 
     let positionX x pos =
         match pos with
@@ -42,6 +35,21 @@ module Generator =
         | Node ((_, pos), _)::ts' -> let (Node((_, pos'), _)) = List.last ts'
                                      (abs pos + abs pos') * nodeWidth
 
+
+    let rec mostLabelSpaces ts = 
+        match ts with
+        | []                  -> 0.0
+        | Node((l, _), _)::ts -> let spaces = float (List.length ((string l).Split(' ') |> Array.toList))
+                                 max spaces (mostLabelSpaces ts)
+
+
+    let rec labelSpaceList curr next acc =
+        match curr, next with
+        | [], []               -> []
+        | Node(_, ts)::ts', [] -> labelSpaceList ts' ts (mostLabelSpaces ts)
+        | [], l                -> acc :: (labelSpaceList l [] 0.0)
+        | Node(_, ts)::ts', l  -> labelSpaceList ts' (l @ ts) (max acc (mostLabelSpaces ts))
+                              
 
     let toPSslow t =
         let moveto x y = 
@@ -72,13 +80,16 @@ module Generator =
                                         moveto x' y + lineto x' (y - depthHeight) + subtreeLines ts x y
 
                                         
-        let rec psTree t x y =
+        let rec psTree t x y sl =
             match t with
             | Node ((l, _), []) -> makeLabel (string l) x y
             | Node ((l, _), ts) -> let out = moveto x y
-                                   let y = y - parentMargin
+                                   //let y = y - parentMargin
                                    let out = out + (makeLabel l x y)
-                                   let spaces = mostLabelSpaces ts
+                                   let (spaces, sls) =
+                                        match sl with
+                                        | [] -> 1.0 , []
+                                        | h :: slt -> h , slt
                                    let y = y - spaces * labelMargin
                                    let out = out + moveto x y
                                    let y = y - nodeHeight
@@ -90,16 +101,16 @@ module Generator =
                                    let x = x + lineWidth
                                    let out = out + lineto x y + stroke
                                    let x = x - halfLineWidth
-                                   let out = out + subtreeLines ts x y + psSubtrees ts x (y - depthHeight - depthMargin)
+                                   let out = out + subtreeLines ts x y + psSubtrees ts x (y - depthHeight - depthMargin) sls
                                    out
-        and psSubtrees ts x y =
+        and psSubtrees ts x y sl =
             match ts with
             | []     -> ""
             | t::ts' -> let (Node((_, pos), _)) = t
                         let x' = positionX x pos
-                        psTree t x' y + psSubtrees ts' x y
+                        psTree t x' y sl + psSubtrees ts' x y sl
                            
-        psPre + psTree t startX startY + stroke + showpage
+        psPre + psTree t startX startY (labelSpaceList [t] [] 0.0) + stroke + showpage
 
 
     let toPSfast t =
@@ -129,14 +140,8 @@ module Generator =
             | []                     -> ""
             | Node ((_, pos), _)::ts -> let x' = positionX x pos 
                                         String.concat "" [moveto x' y; lineto x' (y - depthHeight); subtreeLines ts x y]
+   
 
-        let rec labelSpaceList curr next acc =
-            match curr, next with
-            | [],[]                  -> []
-            | Node(_,subtrees)::t,[] -> labelSpaceList t subtrees (mostLabelSpaces subtrees)
-            | [],l                   -> acc::(labelSpaceList l [] 0.)
-            | Node(_,subtrees)::t,l  -> labelSpaceList t (l@subtrees) (max acc (mostLabelSpaces subtrees))
-                                        
         let rec psTree t x y sl =
             match t with
             | Node((l, _), []) -> makeLabel (string l) x y
@@ -144,10 +149,10 @@ module Generator =
                                     sb.Append (moveto x y) |> ignore
                                     //let y = y - parentMargin
                                     sb.Append (makeLabel l x y)|> ignore
-                                    let (spaces,sls) =
+                                    let (spaces, sls) =
                                         match sl with
-                                        | [] -> 1.,[]
-                                        | h::slt -> h,slt
+                                        | [] -> 1.0 , []
+                                        | h :: slt -> h , slt
                                     let y = y - spaces * labelMargin
                                     sb.Append (moveto x y) |> ignore
                                     let y = y - nodeHeight
@@ -161,7 +166,7 @@ module Generator =
                                     sb.Append (stroke) |> ignore
                                     let x = x - halfLineWidth
                                     sb.Append (subtreeLines ts x y) |> ignore
-                                    sb.Append (psSubtrees ts x (y - depthHeight - depthMargin) sls: string) |> ignore
+                                    sb.Append (psSubtrees ts x (y - depthHeight - depthMargin) sls : string) |> ignore
                                     sb.ToString()
         and psSubtrees ts x y sl =
             match ts with 
@@ -170,7 +175,7 @@ module Generator =
                         let x' = positionX x pos
                         String.concat "" [psTree t x' y sl; psSubtrees ts' x y sl]
                            
-        String.concat "" [psPre; psTree t startX startY (labelSpaceList [t] [] 0.); stroke; showpage]
+        String.concat "" [psPre; psTree t startX startY (labelSpaceList [t] [] 0.0); stroke; showpage]
 
 
     let writeToFile n d =
