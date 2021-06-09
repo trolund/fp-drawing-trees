@@ -35,8 +35,8 @@ let p = P ([VarDec (ITyp, "x")],
 
 let producePDF () =     
     let file = "testProgram"
-    let tree = parseProgram p
-    treeToFile file tree
+    let tree = toGeneralTree p
+    treeToFile file n4
    
     let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     let scriptFile = if isWindows then 
@@ -48,12 +48,13 @@ let producePDF () =
     let proc      = new Process(StartInfo = procStart)
     proc.Start() |> ignore
 
+
 let timeFunc n f = 
   // start timer.
   let stopWatch = Stopwatch.StartNew()
 
   // method to test
-  let v = f()
+  let _ = f ()
 
   // stop timer.
   stopWatch.Stop()
@@ -62,16 +63,16 @@ let timeFunc n f =
   printfn "%s : %f" n stopWatch.Elapsed.TotalMilliseconds
   stopWatch.Elapsed.TotalMilliseconds
 
-let multiRun n f = 
+let multiRun n tl f = 
 
-  let rec aux acc n =
-    match n with
-    | n when n = 0 -> acc
-    | n -> let rand = new Random()
-           let v = f()
-           aux (v :: acc) (n - 1) 
+  let rec aux acc tl' =
+    match tl' with
+    | [] -> acc
+    | t::tx -> 
+           let v = (timeFunc n (fun() -> f t ))
+           aux (v :: acc) tx
 
-  aux [] n
+  aux [] tl
 
 let avg l =        
     let sum, count = List.fold (fun (s, c) v -> (s + v, c + 1.)) (0.,0.) l
@@ -79,10 +80,19 @@ let avg l =
 
 [<EntryPoint>]
 let main argv =
-  let tree = design n8
+  let t1 = design n1
+  let t2 = design n2
+  let t3 = design n3
+  let t4 = design n4
+  let t5 = design n5
+  let t6 = design n6
+  let t7 = design n7
+  let t8 = design n8
+  let t9 = design fact
 
-  let slowavg = multiRun 20 (fun() -> timeFunc "slow" (fun() -> toPSslow tree )) |> avg
-  let fastavg = multiRun 20 (fun() -> timeFunc "fast" (fun() -> toPSfast tree )) |> avg
+  
+  let slowavg = multiRun "slow" [t1; t2; t3; t4; t5; t6; t7; t8; t9] (fun t -> toPSslow t) |> avg
+  let fastavg = multiRun "fast" [t1; t2; t3; t4; t5; t6; t7; t8; t9] (fun t -> toPSfast t) |> avg
 
   printfn "%s : %f" "avg slow" slowavg
   printfn "%s : %f" "avg fast" fastavg
