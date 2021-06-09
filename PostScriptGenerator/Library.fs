@@ -130,38 +130,47 @@ module Generator =
             | Node ((_, pos), _)::ts -> let x' = positionX x pos 
                                         String.concat "" [moveto x' y; lineto x' (y - depthHeight); subtreeLines ts x y]
 
+        let rec labelSpaceList curr next acc =
+            match curr, next with
+            | [],[]                  -> []
+            | Node(_,subtrees)::t,[] -> labelSpaceList t subtrees (mostLabelSpaces subtrees)
+            | [],l                   -> acc::(labelSpaceList l [] 0.)
+            | Node(_,subtrees)::t,l  -> labelSpaceList t (l@subtrees) (max acc (mostLabelSpaces subtrees))
                                         
-        let rec psTree t x y =
+        let rec psTree t x y sl =
             match t with
-            | Node ((l, _), []) -> makeLabel (string l) x y
-            | Node ((l, _), ts) -> let sb = new StringBuilder()
-                                   sb.Append (moveto x y) |> ignore
-                                   let y = y - parentMargin
-                                   sb.Append (makeLabel l x y)|> ignore
-                                   let spaces = mostLabelSpaces ts
-                                   let y = y - spaces * labelMargin
-                                   sb.Append (moveto x y) |> ignore
-                                   let y = y - nodeHeight
-                                   sb.Append (lineto x y) |> ignore
-                                   let lineWidth = subtreeWidth ts
-                                   let halfLineWidth = lineWidth / 2.0
-                                   let x = x - halfLineWidth
-                                   sb.Append (moveto x y) |> ignore
-                                   let x = x + lineWidth
-                                   sb.Append (lineto x y) |> ignore
-                                   sb.Append (stroke) |> ignore
-                                   let x = x - halfLineWidth
-                                   sb.Append (subtreeLines ts x y) |> ignore
-                                   sb.Append (psSubtrees ts x (y - depthHeight - depthMargin): string) |> ignore
-                                   sb.ToString()
-        and psSubtrees ts x y =
+            | Node((l, _), []) -> makeLabel (string l) x y
+            | Node((l, _), ts) ->   let sb = new StringBuilder()
+                                    sb.Append (moveto x y) |> ignore
+                                    //let y = y - parentMargin
+                                    sb.Append (makeLabel l x y)|> ignore
+                                    let (spaces,sls) =
+                                        match sl with
+                                        | [] -> 1.,[]
+                                        | h::slt -> h,slt
+                                    let y = y - spaces * labelMargin
+                                    sb.Append (moveto x y) |> ignore
+                                    let y = y - nodeHeight
+                                    sb.Append (lineto x y) |> ignore
+                                    let lineWidth = subtreeWidth ts
+                                    let halfLineWidth = lineWidth / 2.0
+                                    let x = x - halfLineWidth
+                                    sb.Append (moveto x y) |> ignore
+                                    let x = x + lineWidth
+                                    sb.Append (lineto x y) |> ignore
+                                    sb.Append (stroke) |> ignore
+                                    let x = x - halfLineWidth
+                                    sb.Append (subtreeLines ts x y) |> ignore
+                                    sb.Append (psSubtrees ts x (y - depthHeight - depthMargin) sls: string) |> ignore
+                                    sb.ToString()
+        and psSubtrees ts x y sl =
             match ts with 
             | []     -> ""
             | t::ts' -> let (Node((_, pos), _)) = t
                         let x' = positionX x pos
-                        String.concat "" [psTree t x' y; psSubtrees ts' x y]
+                        String.concat "" [psTree t x' y sl; psSubtrees ts' x y sl]
                            
-        String.concat "" [psPre; psTree t startX startY; stroke; showpage]
+        String.concat "" [psPre; psTree t startX startY (labelSpaceList [t] [] 0.); stroke; showpage]
 
 
     let writeToFile n d =
