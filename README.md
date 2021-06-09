@@ -25,3 +25,18 @@ The topic of this project is drawing aesthetically pleasing trees given a labell
     
 * TreeManager
     - Contains all functions to manipulate trees.
+
+
+## Run the project
+
+    cd Runner
+    dotnet run Runner.dll
+
+or
+
+    $ ./run.sh  
+    $ .\run.bat
+
+### Run property tests
+
+    dotnet test
