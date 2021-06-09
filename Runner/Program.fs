@@ -97,6 +97,6 @@ let main argv =
   printfn "%s : %f" "avg slow" slowavg
   printfn "%s : %f" "avg fast" fastavg
 
-  // producePDF()
+  producePDF()
 
   0
