@@ -390,6 +390,7 @@ FodyWeavers.xsd
 Runner/output.pdf
 *.pdf
 *.ps
+!output/p.pdf
+!output/p.ps
 log.txt
-PostScriptGenerator/Library.fs
 .DS_Store
