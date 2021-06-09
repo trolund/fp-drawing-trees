@@ -37,7 +37,7 @@ let p = P ([VarDec (ITyp, "x")],
 
 let producePDF () =     
     let file = "testProgram"
-    let tree = parseProgram p
+    let tree = toGeneralTree p
     treeToFile file tree
    
     let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
