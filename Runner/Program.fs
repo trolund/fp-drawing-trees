@@ -1,12 +1,10 @@
-﻿open System
-open System.Diagnostics
-
+﻿open System.Diagnostics
 open FPP1.TreeManager
 open AST
 open PostScriptGenerator.Generator
 open System.Runtime.InteropServices
-open PerformanceTest.PerformanceTest
-   
+open PerformanceTest
+     
 let n1 = Node ("NODE1", []);
 let n2 = Node ("NODE1", [Node ("NODE2", []); Node ("NODE3", []); Node ("NODE4", [])]);
 let n3 = Node ("NODE1", [Node ("NODE2", [Node ("NODE4", []); Node ("NODE5", [])]); Node ("NODE3", [Node ("NODE6", []); Node ("NODE7", [])])]);
