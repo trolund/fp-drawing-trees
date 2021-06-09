@@ -1,58 +1,11 @@
 ﻿namespace FPP1
 
+open AST
+
 module TreeManager =
 
     type 'a Tree = Node of 'a * ('a Tree list)
     type Extent = (float * float) list
-
-    // let n0 = Node(0,[])
-    // let n1 = Node(1,[])
-    // let n2 = Node(2,[])
-    // let n3 = Node(3,[])
-    // let n4 = Node(4,[n0;n1])
-    // let n5 = Node(5,[n2;n3])
-    // let n6 = Node(6,[n4])
-    // let n7 = Node(7,[n5])
-    // let n8 = Node(8,[n6])
-    // let n9 = Node(9,[n7])
-    // let n10 = Node(10,[n8;n9])
-    
-    type Exp =                            
-             | N  of int                     (* Integer constant               *)
-             | B of bool                     (* Boolean constant               *)
-             | Access of Access              (* x    or  ^p    or  a[e]        *)
-             | Addr of Access                (* &x   or  &p^   or  &a[e]       *)
-             | Apply of string * Exp list    (* Function application           *)
-
-    and Access = 
-              | AVar of string               (* Variable access        x       *) 
-              | AIndex of Access * Exp       (* Array indexing         a[e]    *)
-              | ADeref of Exp                (* Pointer dereferencing  p^      *)
-
-    type Stm  =                            
-              | PrintLn of Exp               (* Print                          *) 
-              | Ass of Access * Exp          (* x:=e  or  p^:=e  or  a[e]:=e   *)
-              | Return of Exp option         (* Return from function           *)   
-              | Alt of GuardedCommand        (* Alternative statement          *) 
-              | Do of GuardedCommand         (* Repetition statement           *) 
-              | Block of Dec list * Stm list (* Block: grouping and scope      *)
-              | Call of string * Exp list    (* Procedure call                 *)
-                   
-    and GuardedCommand = GC of (Exp * Stm list) list (* Guarded commands        *)
-
-    and Dec = 
-             | VarDec of Typ * string        (* Variable declaration            *)
-             | FunDec of Typ option * string * Dec list * Stm
-                                             (* Function and procedure declaration *) 
-    and Typ  = 
-             | ITyp                          (* Type int                    *)
-             | BTyp                          (* Type bool                   *)
-             | ATyp of Typ * int option      (* Type array                  *)
-             | PTyp of Typ                   (* Type pointer                *)
-             | FTyp of Typ list * Typ option (* Type function and procedure *)
-
-    type Program = P of Dec list * Stm list  (* Program                     *)
-   
 
     let rec same' x y =
         match x,y with
