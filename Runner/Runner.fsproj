@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PostScriptGenerator\PostScriptGenerator.fsproj" />
     <ProjectReference Include="..\TreeManager\TreeManager.fsproj" />
+    <ProjectReference Include="..\Test\Test.fsproj" />
   </ItemGroup>
 
 </Project>

@@ -10,9 +10,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Compile Include="PerformanceTest.fs" />
     <PackageReference Include="FsCheck" Version="2.15.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -24,10 +22,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TreeManager\TreeManager.fsproj" />
+    <ProjectReference Include="..\PostScriptGenerator\PostScriptGenerator.fsproj" />
   </ItemGroup>
-
 </Project>
