@@ -2,6 +2,7 @@
 open System.Diagnostics
 
 open FPP1.TreeManager
+open AST
 open PostScriptGenerator.Generator
 open System.Runtime.InteropServices
    
